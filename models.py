@@ -19,6 +19,11 @@ class ClientResponse(ClientCreate):
 class AccountCreate(BaseModel):
     account_number: str
     balance: float
+    client_full_name: str
 
-class AccountResponse(AccountCreate):
+class AccountResponse(BaseModel):
     account_id: int
+    id_client: int
+    account_number: str
+    balance: float
+    client_full_name: str  # Agregado para incluir el nombre completo del cliente

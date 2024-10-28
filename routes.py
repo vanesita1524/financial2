@@ -83,7 +83,7 @@ async def get_client_names():
         connection.close()
 
 @router.post("/accounts", response_model=AccountResponse, tags=["accounts"])
-async def create_account(account: AccountCreate, client_full_name: str):
+async def create_account(account: AccountCreate):
     connection = get_db_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Database connection failed")
@@ -91,7 +91,7 @@ async def create_account(account: AccountCreate, client_full_name: str):
     cursor = connection.cursor(dictionary=True)
     try:
         # Obtener el ID del cliente a partir del nombre completo
-        cursor.execute("SELECT id_client FROM clients WHERE CONCAT(name, ' ', last_name) = %s", (client_full_name,))
+        cursor.execute("SELECT id_client FROM clients WHERE CONCAT(name, ' ', last_name) = %s", (account.client_full_name,))
         client = cursor.fetchone()
         
         if not client:
@@ -126,13 +126,25 @@ async def list_accounts():
     cursor = connection.cursor(dictionary=True)
     try:
         select_query = """
-        SELECT account_id, id_client, account_number, balance
-        FROM accounts
+        SELECT a.account_id, a.id_client, a.account_number, a.balance,
+               c.name, c.last_name
+        FROM accounts a
+        JOIN clients c ON a.id_client = c.id_client
         """
         cursor.execute(select_query)
         accounts = cursor.fetchall()
         
-        return [AccountResponse(**account) for account in accounts]
+        # Modificar la respuesta para incluir el nombre y apellido del cliente
+        return [
+            {
+                "account_id": account["account_id"],
+                "id_client": account["id_client"],
+                "account_number": account["account_number"],
+                "balance": account["balance"],
+                "client_full_name": f"{account['name']} {account['last_name']}"  # Concatenar nombre y apellido
+            }
+            for account in accounts
+        ]
     
     except Error as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
