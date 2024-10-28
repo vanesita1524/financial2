@@ -4,7 +4,10 @@ from routes import router
 tags_metadata = [
     {
         "name": "clients",
-        "description": "Operaciones para la gestión de clientes"
+        "description": "Operaciones para la gestión de clientes"},
+
+    {   "name": "accounts",
+        "description": "operaciones con cuentas"
     }
 ]
 

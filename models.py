@@ -14,3 +14,12 @@ class ClientCreate(BaseModel):
 # Modelo para respuesta de cliente
 class ClientResponse(ClientCreate):
     id_client: int
+
+#modelo para cuentas
+class AccountCreate(BaseModel):
+    id_client: int
+    account_number: str
+    balance: float
+
+class AccountResponse(AccountCreate):
+    account_id: int

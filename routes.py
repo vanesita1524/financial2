@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 from conexion import get_db_connection
-from models import ClientCreate, ClientResponse
+from models import ClientCreate, ClientResponse, AccountCreate, AccountResponse
 from mysql.connector import Error
 
 router = APIRouter()
@@ -57,6 +57,54 @@ async def list_clients():
     
     except Error as e:
         raise HTTPException(status_code=500, detail=f"Ocurrió un error: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
+
+@router.post("/accounts", response_model=AccountResponse, tags=["accounts"])
+async def create_account(account: AccountCreate):
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    cursor = connection.cursor()
+    try:
+        insert_query = """
+        INSERT INTO accounts (id_client, account_number, balance)
+        VALUES (%s, %s, %s)
+        """
+        cursor.execute(insert_query, (account.id_client, account.account_number, account.balance))
+        connection.commit()
+        
+        account_id = cursor.lastrowid
+        return AccountResponse(account_id=account_id, **account.dict())
+    
+    except Error as e:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
+
+@router.get("/accounts", response_model=List[AccountResponse], tags=["accounts"])
+async def list_accounts():
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    cursor = connection.cursor(dictionary=True)
+    try:
+        select_query = """
+        SELECT account_id, id_client, account_number, balance
+        FROM accounts
+        """
+        cursor.execute(select_query)
+        accounts = cursor.fetchall()
+        
+        return [AccountResponse(**account) for account in accounts]
+    
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
     finally:
         cursor.close()
         connection.close()
