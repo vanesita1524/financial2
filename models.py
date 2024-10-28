@@ -17,7 +17,6 @@ class ClientResponse(ClientCreate):
 
 #modelo para cuentas
 class AccountCreate(BaseModel):
-    id_client: int
     account_number: str
     balance: float
 
