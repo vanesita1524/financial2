@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import List
 
-# Modelo para crear clientes
+# Modelo para crear clientes 1
 class ClientCreate(BaseModel):
     name: str
     last_name: str

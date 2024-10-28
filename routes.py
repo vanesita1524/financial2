@@ -3,7 +3,7 @@ from typing import List
 from conexion import get_db_connection
 from models import ClientCreate, ClientResponse, AccountCreate, AccountResponse
 from mysql.connector import Error
-
+#rutas
 router = APIRouter()
 
 @router.post("/clients/bulk", response_model=List[ClientResponse], tags=["clients"])
