@@ -12,7 +12,7 @@ load_dotenv()
 tags_metadata = [
     {
         "name": "clients",
-        "description": "Operaciones con clientes"
+        "description": "opppp clientes"
     }
 ]
 
