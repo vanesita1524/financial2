@@ -27,12 +27,23 @@ class AccountResponse(AccountCreate):
     id_client: int
 
 class WithdrawalCreate(BaseModel):
-    account_number: str  # Número de cuenta
-    amount: float        # Monto del retiro
-    withdrawal_date: date  # Fecha del retiro
-    withdrawal_method: str  # Método del retiro
+    account_number: str  
+    amount: float       
+    withdrawal_date: date  
+    withdrawal_method: str  
 
 class WithdrawalResponse(WithdrawalCreate):
     withdrawal_id: int
     account_id: int
     account_number: str
+
+class TransferCreate(BaseModel):
+    from_account_number: str  # Número de cuenta de origen
+    to_account_number: str    # Número de cuenta de destino
+    amount: Decimal            # Monto de la transferencia
+    transfer_date: date   # Fecha de la transferencia
+    transfer_method: str       # Método de transferencia    # Banco de destino
+    status: str = "pending"    # Estado de la transferencia (por defecto "pending")
+
+class TransferResponse(TransferCreate):
+    transfer_id: int           # ID de la transferencia

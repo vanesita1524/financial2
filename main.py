@@ -9,8 +9,11 @@ tags_metadata = [
     {   "name": "accounts",
         "description": "operaciones con cuentas"},
 
-    {"name": "withdrawal",
-    "descrition": "operaciones con retiros"}
+    {"name": "withdrawals",
+    "description": "operaciones con retiros"},
+
+    {"name": "transfers",
+    "description": "poperaciones con tranferencias"}
 ]
 
 app = FastAPI(

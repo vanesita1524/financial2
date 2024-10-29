@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 from conexion import get_db_connection
-from models import ClientCreate, ClientResponse, AccountCreate, AccountResponse, WithdrawalCreate, WithdrawalResponse
+from models import ClientCreate, ClientResponse, AccountCreate, AccountResponse, WithdrawalCreate, WithdrawalResponse, TransferCreate, TransferResponse
 from mysql.connector import Error
 from decimal import Decimal
 
@@ -236,6 +236,107 @@ async def list_withdrawals():
                 "client_full_name": f"{withdrawal['name']} {withdrawal['last_name']}"
             }
             for withdrawal in withdrawals
+        ]
+    
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
+
+@router.post("/transfers", response_model=TransferResponse, tags=["transfers"])
+async def create_transfer(transfer: TransferCreate):
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    cursor = connection.cursor(dictionary=True)
+    try:
+        # Obtener el ID de la cuenta de origen usando el número de cuenta
+        cursor.execute("SELECT account_id, balance FROM accounts WHERE account_number = %s", (transfer.from_account_number,))
+        from_account = cursor.fetchone()
+        
+        if not from_account:
+            raise HTTPException(status_code=404, detail="From account not found")
+        
+        # Obtener el ID de la cuenta de destino usando el número de cuenta
+        cursor.execute("SELECT account_id FROM accounts WHERE account_number = %s", (transfer.to_account_number,))
+        to_account = cursor.fetchone()
+        
+        if not to_account:
+            raise HTTPException(status_code=404, detail="To account not found")
+        
+        # Si el estado es "completed", verificar que haya suficiente saldo
+        if transfer.status.lower() == "completed":
+            if from_account["balance"] < transfer.amount:
+                raise HTTPException(status_code=400, detail="Insufficient balance in the from account")
+            
+            # Actualizar el saldo de la cuenta de origen
+            new_from_balance = from_account["balance"] - transfer.amount
+            cursor.execute("UPDATE accounts SET balance = %s WHERE account_id = %s", (new_from_balance, from_account["account_id"]))
+            
+            # Actualizar el saldo de la cuenta de destino
+            cursor.execute("SELECT balance FROM accounts WHERE account_id = %s", (to_account["account_id"],))
+            to_account_balance = cursor.fetchone()["balance"]
+            new_to_balance = to_account_balance + transfer.amount
+            cursor.execute("UPDATE accounts SET balance = %s WHERE account_id = %s", (new_to_balance, to_account["account_id"]))
+        
+        # Insertar la transferencia en la tabla de transfers
+        insert_query = """
+        INSERT INTO transfers (from_account_id, to_account_id, amount, transfer_date, transfer_method, status)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_query, (from_account["account_id"], to_account["account_id"], transfer.amount, transfer.transfer_date, transfer.transfer_method, transfer.status))
+        connection.commit()
+        
+        transfer_id = cursor.lastrowid
+        return TransferResponse(
+            transfer_id=transfer_id,
+            from_account_number=transfer.from_account_number,
+            to_account_number=transfer.to_account_number,
+            amount=transfer.amount,
+            transfer_date=transfer.transfer_date,
+            transfer_method=transfer.transfer_method,
+            status=transfer.status
+        )
+    
+    except Error as e:
+        connection.rollback()  # Deshacer cambios en caso de error
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    
+    finally:
+        cursor.close()  # Cerrar el cursor
+        connection.close()  # Cerrar la conexión
+
+@router.get("/transfers", response_model=List[TransferResponse], tags=["transfers"])
+async def list_transfers():
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    cursor = connection.cursor(dictionary=True)
+    try:
+        select_query = """
+        SELECT t.transfer_id, t.amount, t.transfer_date, t.transfer_method,  t.status,
+            fa.account_number AS from_account_number, ta.account_number AS to_account_number
+        FROM transfers t
+        JOIN accounts fa ON t.from_account_id = fa.account_id
+        JOIN accounts ta ON t.to_account_id = ta.account_id
+        """
+        cursor.execute(select_query)
+        transfers = cursor.fetchall()
+        
+        return [
+            {
+                "transfer_id": transfer["transfer_id"],
+                "from_account_number": transfer["from_account_number"],
+                "to_account_number": transfer["to_account_number"],
+                "amount": transfer["amount"],
+                "transfer_date": transfer["transfer_date"],
+                "transfer_method": transfer["transfer_method"],
+                "status": transfer["status"]
+            }
+            for transfer in transfers
         ]
     
     except Error as e:
