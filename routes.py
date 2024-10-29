@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 from conexion import get_db_connection
-from models import ClientCreate, ClientResponse
+from models import ClientCreate, ClientResponse, AccountCreate, AccountResponse
 from mysql.connector import Error
-
+#rutas
 router = APIRouter()
 
 @router.post("/clients/bulk", response_model=List[ClientResponse], tags=["clients"])
@@ -57,6 +57,97 @@ async def list_clients():
     
     except Error as e:
         raise HTTPException(status_code=500, detail=f"Ocurrió un error: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
+
+# Ruta para obtener nombres y IDs de clientes
+@router.get("/clients/names", tags=["clients"])
+async def get_client_names():
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Error de conexión a la base de datos")
+    
+    cursor = connection.cursor(dictionary=True)
+    try:
+        # Cambia 'first_name' y 'last_name' por los nombres de tus columnas reales
+        query = "SELECT id_client, CONCAT(name, ' ', last_name) AS full_name FROM clients"
+        cursor.execute(query)
+        clients = cursor.fetchall()
+        return clients
+    
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Ocurrió un error: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
+
+@router.post("/accounts", response_model=AccountResponse, tags=["accounts"])
+async def create_account(account: AccountCreate):
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    cursor = connection.cursor(dictionary=True)
+    try:
+        # Obtener el ID del cliente a partir del nombre completo
+        cursor.execute("SELECT id_client FROM clients WHERE CONCAT(name, ' ', last_name) = %s", (account.client_full_name,))
+        client = cursor.fetchone()
+        
+        if not client:
+            raise HTTPException(status_code=404, detail="Client not found")
+        
+        id_client = client["id_client"]
+        
+        # Insertar la cuenta con el ID del cliente
+        insert_query = """
+        INSERT INTO accounts (id_client, account_number, balance)
+        VALUES (%s, %s, %s)
+        """
+        cursor.execute(insert_query, (id_client, account.account_number, account.balance))
+        connection.commit()
+        
+        account_id = cursor.lastrowid
+        return AccountResponse(account_id=account_id, id_client=id_client, **account.dict())
+    
+    except Error as e:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
+
+@router.get("/accounts", response_model=List[AccountResponse], tags=["accounts"])
+async def list_accounts():
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    cursor = connection.cursor(dictionary=True)
+    try:
+        select_query = """
+        SELECT a.account_id, a.id_client, a.account_number, a.balance,
+               c.name, c.last_name
+        FROM accounts a
+        JOIN clients c ON a.id_client = c.id_client
+        """
+        cursor.execute(select_query)
+        accounts = cursor.fetchall()
+        
+        # Modificar la respuesta para incluir el nombre y apellido del cliente
+        return [
+            {
+                "account_id": account["account_id"],
+                "id_client": account["id_client"],
+                "account_number": account["account_number"],
+                "balance": account["balance"],
+                "client_full_name": f"{account['name']} {account['last_name']}"  # Concatenar nombre y apellido
+            }
+            for account in accounts
+        ]
+    
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
     finally:
         cursor.close()
         connection.close()

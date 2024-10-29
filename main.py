@@ -1,10 +1,13 @@
 from fastapi import FastAPI
 from routes import router
-
+#tags
 tags_metadata = [
     {
         "name": "clients",
-        "description": "Operaciones para la gestión de clientes"
+        "description": "Operaciones para la gestión de clientes"},
+
+    {   "name": "accounts",
+        "description": "operaciones con cuentas"
     }
 ]
 
