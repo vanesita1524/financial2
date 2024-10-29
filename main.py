@@ -13,7 +13,9 @@ tags_metadata = [
     "description": "operaciones con retiros"},
 
     {"name": "transfers",
-    "description": "poperaciones con tranferencias"}
+    "description": "poperaciones con tranferencias"},
+    {"name": "employees",
+    "description": "operaciones empleados"}
 ]
 
 app = FastAPI(
@@ -23,6 +25,6 @@ app = FastAPI(
 
 app.include_router(router)
 
-if __name__ == "__main__":
+if __name__ == "_main_":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 from conexion import get_db_connection
-from models import ClientCreate, ClientResponse, AccountCreate, AccountResponse, WithdrawalCreate, WithdrawalResponse, TransferCreate, TransferResponse
+from models import ClientCreate, ClientResponse, AccountCreate, AccountResponse, WithdrawalCreate, WithdrawalResponse, TransferCreate, TransferResponse,EmployeeCreate, EmployeeResponse
 from mysql.connector import Error
 from decimal import Decimal
 
@@ -61,7 +61,6 @@ async def list_clients():
     finally:
         cursor.close()
         connection.close()
-
 # Ruta para obtener nombres y IDs de clientes
 @router.get("/clients/names", tags=["clients"])
 async def get_client_names():
@@ -83,6 +82,58 @@ async def get_client_names():
         cursor.close()
         connection.close()
 
+@router.post("/employees", response_model=List[EmployeeResponse], tags=["employees"])
+async def create_employees_bulk(employees: List[EmployeeCreate]):
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    cursor = connection.cursor()
+    try:
+        insert_query = """
+        INSERT INTO employees (name, position, hire_date)
+        VALUES (%s, %s, %s)
+        """
+        employee_data = [(employee.name, employee.position, employee.hire_date) for employee in employees]
+        
+        cursor.executemany(insert_query, employee_data)
+        connection.commit()
+        
+        cursor.execute("SELECT LAST_INSERT_ID()")
+        last_id = cursor.fetchone()[0]
+        
+        return [EmployeeResponse(employee_id=last_id+i, **employee.dict()) for i, employee in enumerate(employees)]
+    
+    except Error as e:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
+
+@router.get("/employees", response_model=List[EmployeeResponse], tags=["employees"])
+async def list_employees():
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Error de conexión a la base de datos")
+    
+    cursor = connection.cursor(dictionary=True)
+    try:
+        select_query = """
+        SELECT employee_id, name, position, hire_date 
+        FROM employees
+        """
+        cursor.execute(select_query)
+        employees = cursor.fetchall()
+        
+        return [EmployeeResponse(**employee) for employee in employees]
+    
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Ocurrió un error: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
+
 @router.post("/accounts", response_model=AccountResponse, tags=["accounts"])
 async def create_account(account: AccountCreate):
     connection = get_db_connection()
@@ -90,7 +141,18 @@ async def create_account(account: AccountCreate):
         raise HTTPException(status_code=500, detail="Database connection failed")
     
     cursor = connection.cursor(dictionary=True)
+    cursor = connection.cursor(dictionary=True)
     try:
+        # Obtener el ID del cliente a partir del nombre completo
+        cursor.execute("SELECT id_client FROM clients WHERE CONCAT(name, ' ', last_name) = %s", (account.client_full_name,))
+        client = cursor.fetchone()
+        
+        if not client:
+            raise HTTPException(status_code=404, detail="Client not found")
+        
+        id_client = client["id_client"]
+        
+        # Insertar la cuenta con el ID del cliente
         # Obtener el ID del cliente a partir del nombre completo
         cursor.execute("SELECT id_client FROM clients WHERE CONCAT(name, ' ', last_name) = %s", (account.client_full_name,))
         client = cursor.fetchone()
@@ -127,15 +189,13 @@ async def list_accounts():
     cursor = connection.cursor(dictionary=True)
     try:
         select_query = """
-        SELECT a.account_id, a.id_client, a.account_number, a.balance,
-            c.name, c.last_name
+        SELECT a.account_id, a.id_client, a.account_number, a.balance, c.name, c.last_name
         FROM accounts a
         JOIN clients c ON a.id_client = c.id_client
         """
         cursor.execute(select_query)
         accounts = cursor.fetchall()
         
-        # Modificar la respuesta para incluir el nombre y apellido del cliente
         return [
             {
                 "account_id": account["account_id"],

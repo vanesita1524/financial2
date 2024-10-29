@@ -3,6 +3,7 @@ from datetime import date
 from decimal import Decimal
 
 
+# Modelo para crear clientes 1
 class ClientCreate(BaseModel):
     name: str
     last_name: str
@@ -16,14 +17,28 @@ class ClientCreate(BaseModel):
 class ClientResponse(ClientCreate):
     id_client: int
 
+class EmployeeCreate(BaseModel):
+    name: str
+    position: str
+    hire_date:date
+
+# Modelo para respuesta de cliente
+class EmployeeResponse(EmployeeCreate):
+    employee_id: int
+    
 #modelo para cuentas
 class AccountCreate(BaseModel):
     account_number: str
     balance: float
     client_full_name: str
 
-class AccountResponse(AccountCreate):
+class AccountResponse(BaseModel):
     account_id: int
+    id_client: int
+    account_number: str
+    balance: float
+    client_full_name: str
+    client_full_name: str  # Agregado para incluir el nombre completo del cliente
     id_client: int
 
 class WithdrawalCreate(BaseModel):
