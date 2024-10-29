@@ -1,7 +1,8 @@
 from pydantic import BaseModel
-from typing import List
+from datetime import date
+from decimal import Decimal
 
-# Modelo para crear clientes
+
 class ClientCreate(BaseModel):
     name: str
     last_name: str
@@ -17,9 +18,21 @@ class ClientResponse(ClientCreate):
 
 #modelo para cuentas
 class AccountCreate(BaseModel):
-    id_client: int
     account_number: str
     balance: float
+    client_full_name: str
 
 class AccountResponse(AccountCreate):
     account_id: int
+    id_client: int
+
+class WithdrawalCreate(BaseModel):
+    account_number: str  # Número de cuenta
+    amount: float        # Monto del retiro
+    withdrawal_date: date  # Fecha del retiro
+    withdrawal_method: str  # Método del retiro
+
+class WithdrawalResponse(WithdrawalCreate):
+    withdrawal_id: int
+    account_id: int
+    account_number: str
