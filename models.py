@@ -3,7 +3,7 @@ from datetime import date
 from decimal import Decimal
 
 
-# Modelo para crear clientes 1
+
 class ClientCreate(BaseModel):
     name: str
     last_name: str

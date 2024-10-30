@@ -4,7 +4,7 @@ from conexion import get_db_connection
 from models import ClientCreate, ClientResponse, AccountCreate, AccountResponse, WithdrawalCreate, WithdrawalResponse, TransferCreate, TransferResponse,EmployeeCreate, EmployeeResponse
 from mysql.connector import Error
 from decimal import Decimal
-
+#aaa
 router = APIRouter()
 
 @router.post("/clients/bulk", response_model=List[ClientResponse], tags=["clients"])

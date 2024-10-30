@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from routes import router
-#tags
+
 tags_metadata = [
     {
         "name": "clients",
