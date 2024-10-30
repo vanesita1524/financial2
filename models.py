@@ -3,6 +3,7 @@ from datetime import date
 from decimal import Decimal
 
 
+
 # Modelo para crear clientes 1
 # Modelo para crear clientes 1
 class ClientCreate(BaseModel):
@@ -35,18 +36,10 @@ class AccountCreate(BaseModel):
 
 class AccountResponse(BaseModel):
     account_id: int
-    account_number: str
-    balance: float
-    client_full_name: str
-
-class AccountResponse(BaseModel):
-    account_id: int
     id_client: int
     account_number: str
     balance: float
     client_full_name: str
-    client_full_name: str  # Agregado para incluir el nombre completo del cliente
-    id_client: int
 
 class WithdrawalCreate(BaseModel):
     account_number: str  
@@ -69,3 +62,18 @@ class TransferCreate(BaseModel):
 
 class TransferResponse(TransferCreate):
     transfer_id: int           # ID de la transferencia
+
+# Modelo para crear préstamos
+class LoanCreate(BaseModel):
+    client_full_name: str  # Nombre completo del cliente
+    employee_full_name: str  # Nombre completo del empleado
+    amount: Decimal
+    interest_rate: Decimal
+    disbursement_date: date # Inicialmente vacío
+    due_date: date  # Inicialmente vacío
+    balance: Decimal
+    status: str = "active"  # Estado por defecto
+
+# Modelo para respuesta de préstamo
+class LoanResponse(LoanCreate):
+    loan_id: int
