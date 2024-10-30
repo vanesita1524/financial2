@@ -14,8 +14,12 @@ tags_metadata = [
 
     {"name": "transfers",
     "description": "poperaciones con tranferencias"},
+    
     {"name": "employees",
-    "description": "operaciones empleados"}
+    "description": "operaciones empleados"},
+
+    {"name": "loans",
+    "description": "operaciones con préstamos"}
 ]
 
 app = FastAPI(
