@@ -4,6 +4,7 @@ from decimal import Decimal
 
 
 # Modelo para crear clientes 1
+# Modelo para crear clientes 1
 class ClientCreate(BaseModel):
     name: str
     last_name: str
@@ -28,6 +29,12 @@ class EmployeeResponse(EmployeeCreate):
     
 #modelo para cuentas
 class AccountCreate(BaseModel):
+    account_number: str
+    balance: float
+    client_full_name: str
+
+class AccountResponse(BaseModel):
+    account_id: int
     account_number: str
     balance: float
     client_full_name: str

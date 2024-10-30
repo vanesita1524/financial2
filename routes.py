@@ -88,7 +88,7 @@ async def create_employees_bulk(employees: List[EmployeeCreate]):
     if not connection:
         raise HTTPException(status_code=500, detail="Database connection failed")
     
-    cursor = connection.cursor()
+    cursor = connection.cursor(dictionary=True)
     try:
         insert_query = """
         INSERT INTO employees (name, position, hire_date)
@@ -168,9 +168,11 @@ async def create_account(account: AccountCreate):
         VALUES (%s, %s, %s)
         """
         cursor.execute(insert_query, (id_client, account.account_number, account.balance))
+        cursor.execute(insert_query, (id_client, account.account_number, account.balance))
         connection.commit()
         
         account_id = cursor.lastrowid
+        return AccountResponse(account_id=account_id, id_client=id_client, **account.dict())
         return AccountResponse(account_id=account_id, id_client=id_client, **account.dict())
     
     except Error as e:
