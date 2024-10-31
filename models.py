@@ -68,3 +68,4 @@ class LoanCreate(BaseModel):
 
 class LoanResponse(LoanCreate):
     loan_id: int
+    

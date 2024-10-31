@@ -40,7 +40,6 @@ async def list_clients():
     connection = get_db_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Database connection failed")
-    
     cursor = connection.cursor(dictionary=True)
     try:
         select_query = """
