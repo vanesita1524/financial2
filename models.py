@@ -2,10 +2,6 @@ from pydantic import BaseModel
 from datetime import date
 from decimal import Decimal
 
-
-
-# Modelo para crear clientes 1
-# Modelo para crear clientes 1
 class ClientCreate(BaseModel):
     name: str
     last_name: str
@@ -15,7 +11,6 @@ class ClientCreate(BaseModel):
     identification_type: str
     identification_number: str
 
-# Modelo para respuesta de cliente
 class ClientResponse(ClientCreate):
     id_client: int
 
@@ -24,11 +19,9 @@ class EmployeeCreate(BaseModel):
     position: str
     hire_date:date
 
-# Modelo para respuesta de cliente
 class EmployeeResponse(EmployeeCreate):
     employee_id: int
-    
-#modelo para cuentas
+
 class AccountCreate(BaseModel):
     account_number: str
     balance: float
@@ -53,27 +46,25 @@ class WithdrawalResponse(WithdrawalCreate):
     account_number: str
 
 class TransferCreate(BaseModel):
-    from_account_number: str  # Número de cuenta de origen
-    to_account_number: str    # Número de cuenta de destino
-    amount: Decimal            # Monto de la transferencia
-    transfer_date: date   # Fecha de la transferencia
-    transfer_method: str       # Método de transferencia    # Banco de destino
-    status: str = "pending"    # Estado de la transferencia (por defecto "pending")
+    from_account_number: str 
+    to_account_number: str   
+    amount: Decimal        
+    transfer_date: date   
+    transfer_method: str       
+    status: str = "pending"    
 
 class TransferResponse(TransferCreate):
-    transfer_id: int           # ID de la transferencia
+    transfer_id: int          
 
-# Modelo para crear préstamos
 class LoanCreate(BaseModel):
-    client_full_name: str  # Nombre completo del cliente
-    employee_full_name: str  # Nombre completo del empleado
+    client_full_name: str 
+    employee_full_name: str
     amount: Decimal
     interest_rate: Decimal
-    disbursement_date: date # Inicialmente vacío
-    due_date: date  # Inicialmente vacío
+    disbursement_date: date 
+    due_date: date 
     balance: Decimal
-    status: str = "active"  # Estado por defecto
+    status: str = "active" 
 
-# Modelo para respuesta de préstamo
 class LoanResponse(LoanCreate):
     loan_id: int

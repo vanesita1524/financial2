@@ -1,25 +1,25 @@
 from fastapi import FastAPI
 from routes import router
-#tags
+
 tags_metadata = [
     {
         "name": "clients",
-        "description": "Operaciones para la gestión de clientes"},
+        "description": "Operations with Clients"},
 
     {   "name": "accounts",
-        "description": "operaciones con cuentas"},
+        "description": "Operations with accounts"},
 
     {"name": "withdrawals",
-    "description": "operaciones con retiros"},
+    "description": "Operations with withdrawals"},
 
     {"name": "transfers",
-    "description": "poperaciones con tranferencias"},
+    "description": "Operations with transfers"},
     
     {"name": "employees",
-    "description": "operaciones empleados"},
+    "description": "Operations with employees"},
 
     {"name": "loans",
-    "description": "operaciones con préstamos"}
+    "description": "Operations with loans"}
 ]
 
 app = FastAPI(
