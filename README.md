@@ -16,6 +16,7 @@ financial2/
 │── main.py               # Creación de la API con FastAPI + definición de tags
 │── models.py             # Definición de Pydantic BaseModels (para cada tabla)
 │── routers/              # Rutas organizadas de la API (endpoints GET y POST)
+|── .env.example          #ejemplo de como configurar las variables de entorno
 ```
 
 ## Base de Datos
