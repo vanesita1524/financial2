@@ -6,6 +6,7 @@ The application connects to a **MySQL** database that contains the main system t
 
 ---
 ## Project Structure
+---
 financial2/
 │── .env                  # Environment variables (sensitive connection data)
 │── .gitignore            # Excludes sensitive files and virtualenv
@@ -120,7 +121,3 @@ Routes and Endpoints
 
 Routes are organized in the routers/ folder. Includes GET (queries, joins between tables) and POST (create records).
 Endpoints are documented with tags in main.py for easy use in Swagger.
-
----
-git clone https://github.com/vanesita1524/financial2.git
-cd financial2
