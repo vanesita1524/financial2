@@ -1,112 +1,126 @@
 # financial2
 #  Financial API
 
-API desarrollada con FastAPI y Streamlit para la gestión y consulta de información financiera de una empresa.  
-La aplicación se conecta a una base de datos (MySQL) que contiene las tablas principales del sistema y permite realizar consultas comunes (**GET** y **POST**) utilizando sobretodo `JOIN` de todo tipo.
+API developed with **FastAPI** and **Streamlit** for the management and query of financial information of a company.  
+The application connects to a **MySQL** database that contains the main system tables and allows common queries (**GET** and **POST**), using different types of `JOIN`.
 
-## Estructura del Proyecto
-
-```
+---
+## Project Structure
 financial2/
-│── .env                  # Variables de entorno (datos sensibles de conexión)
-│── .gitignore            # Exclusión de archivos sensibles y virtualenv
-│── db_schema.sql         # Esquema lógico de la base de datos (DDL)
-│── requirements.txt      # Dependencias del proyecto
-│── conexion.py           # Conexión a la base de datos MySQL
-│── main.py               # Creación de la API con FastAPI + definición de tags
-│── models.py             # Definición de Pydantic BaseModels (para cada tabla)
-│── routers/              # Rutas organizadas de la API (endpoints GET y POST)
-|── .env.example          #ejemplo de como configurar las variables de entorno
-```
+│── .env                  # Environment variables (sensitive connection data)
+│── .gitignore            # Excludes sensitive files and virtualenv
+│── db_schema.sql         # Database logical schema (DDL)
+│── requirements.txt      # Project dependencies
+│── conexion.py           # Connection to MySQL database
+│── main.py               # API creation with FastAPI + tag definition
+│── models.py             # Pydantic BaseModels definition (for each table)
+│── routers/              # Organized API routes (GET and POST endpoints)
+│── .env.example          # Example of environment variables configuration
 
-## Base de Datos
+---
+Technologies Used
+---
+Python 3.10+
 
-La API trabaja sobre un esquema financiero en MySQL con las siguientes tablas:
+FastAPI (backend framework)
 
-- accounts → Información de cuentas.
+Streamlit (visual interface)
 
-- clients → Datos de clientes.
+MySQL (relational database)
 
-- employees → Datos de empleados.
+Uvicorn (ASGI server)
 
-- loans → Préstamos otorgados.
+dotenv (environment variable management)
 
-- transfers → Transferencias realizadas.
+Pydantic (data validation)
 
-- withdrawals → Retiros de dinero.
+---
+Database
+---
+The API works on a financial schema in **MySQL** with the following tables:
 
-**El archivo db_schema.sql contiene la definición del esquema.
+- **accounts** → Accounts information.  
+- **clients** → Client data.  
+- **employees** → Employee data.  
+- **loans** → Granted loans.  
+- **transfers** → Performed transfers.  
+- **withdrawals** → Money withdrawals.  
 
-# Instalación y Configuración
+The file `db_schema.sql` contains the database schema definition.  
 
-1. Clonar el repositorio:
+---
+
+## Installation and Setup
+
+1. Clone the repository:
 ```
 git clone https://github.com/vanesita1524/financial2.git
 cd financial2
 ```
-2. Crear y activar entorno virtual
+2. Create and activate a virtual environment:
 ```
 python -m venv venv
 source venv/bin/activate   # Linux/Mac
 venv\Scripts\activate      # Windows
 ```
-3. Instalar dependencias
+3. Install dependencies:
 ```
 pip install -r requirements.txt
 ```
-4. Configurar variables de entorno en el archivo .env (no incluido en el repo por seguridad)
-```
+---
+4. Configure environment variables in the .env file (not included for security):
+---
 DB_HOST=localhost
-DB_USER=tu_usuario
-DB_PASSWORD=tu_password
+DB_USER=your_user
+DB_PASSWORD=your_password
 DB_NAME=financial_db
 
-## Ejecución del Proyecto
-```
-Levantar la API con FastAPI
-```
+---
+Run the Project
+---
+
+Start the API with FastAPI:
+
+---
+
 uvicorn main:app --reload
-```
-La documentación interactiva estará disponible en:
+
+---
+
+Interactive documentation will be available at:
+
 
 Swagger UI → http://127.0.0.1:8000/docs
 
 ReDoc → http://127.0.0.1:8000/redoc
 
-Ejecutar la interfaz con Streamlit
-```
+---
+Run the interface with Streamlit:
+
+---
+
 streamlit run app.py
-```
-## Funcionamiento
 
-Conexión a la base de datos
+---
+How It Works
+---
 
-El archivo conexion.py maneja la conexión a MySQL utilizando las variables del .env. Se asegura de no exponer credenciales sensibles gracias a .gitignore.
+---
+Database connection
 
-Modelos de datos
+conexion.py manages the MySQL connection using .env variables.
 
-En models.py se definen las clases BaseModel de Pydantic para validar la información de cada tabla.
+Credentials are protected with .gitignore.
 
-Rutas y Endpoints
+Data models
 
-Las rutas están organizadas en la carpeta routers/. Se incluyen operaciones GET (consultas, joins entre tablas) y POST (creación de registros).
+models.py defines Pydantic BaseModel classes to validate each table’s data.
 
-Los endpoints están documentados con tags en main.py para facilitar su uso en Swagger.
+Routes and Endpoints
 
+Routes are organized in the routers/ folder. Includes GET (queries, joins between tables) and POST (create records).
+Endpoints are documented with tags in main.py for easy use in Swagger.
 
-## Tecnologías Utilizadas
-```
-Python 3.10+
-
-FastAPI (framework backend)
-
-Streamlit (interfaz visual)
-
-MySQL (base de datos relacional)
-
-Pydantic (validación de datos)
-
-Uvicorn (servidor ASGI)
-
-dotenv (manejo de variables de entorno)
-```
+---
+git clone https://github.com/vanesita1524/financial2.git
+cd financial2
