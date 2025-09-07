@@ -7,33 +7,33 @@ The application connects to a **MySQL** database that contains the main system t
 ---
 ## Project Structure
 ---
-financial2/
-│── .env                  # Environment variables (sensitive connection data)
-│── .gitignore            # Excludes sensitive files and virtualenv
-│── db_schema.sql         # Database logical schema (DDL)
-│── requirements.txt      # Project dependencies
-│── conexion.py           # Connection to MySQL database
-│── main.py               # API creation with FastAPI + tag definition
-│── models.py             # Pydantic BaseModels definition (for each table)
-│── routers/              # Organized API routes (GET and POST endpoints)
-│── .env.example          # Example of environment variables configuration
+
+- .env                  # Environment variables (sensitive connection data)
+- .gitignore            # Excludes sensitive files and virtualenv
+- db_schema.sql         # Database logical schema (DDL)
+- requirements.txt      # Project dependencies
+- conexion.py           # Connection to MySQL database
+- main.py               # API creation with FastAPI + tag definition
+- models.py             # Pydantic BaseModels definition (for each table)
+- routers/              # Organized API routes (GET and POST endpoints)
+- .env.example          # Example of environment variables configuration
 
 ---
 Technologies Used
 ---
-Python 3.10+
+- Python 3.10+
 
-FastAPI (backend framework)
+- FastAPI (backend framework)
 
-Streamlit (visual interface)
+- Streamlit (visual interface)
 
-MySQL (relational database)
+- MySQL (relational database)
 
-Uvicorn (ASGI server)
+- Uvicorn (ASGI server)
 
-dotenv (environment variable management)
+- dotenv (environment variable management)
 
-Pydantic (data validation)
+- Pydantic (data validation)
 
 ---
 Database
@@ -80,7 +80,7 @@ DB_NAME=financial_db
 Run the Project
 ---
 
-Start the API with FastAPI:
+1. Start the API with FastAPI:
 
 ---
 
@@ -96,7 +96,7 @@ Swagger UI → http://127.0.0.1:8000/docs
 ReDoc → http://127.0.0.1:8000/redoc
 
 ---
-Run the interface with Streamlit:
+2. Run the interface with Streamlit:
 
 ---
 
@@ -109,15 +109,15 @@ How It Works
 ---
 Database connection
 
-conexion.py manages the MySQL connection using .env variables.
+- conexion.py manages the MySQL connection using .env variables.
 
 Credentials are protected with .gitignore.
 
-Data models
+- Data models
 
 models.py defines Pydantic BaseModel classes to validate each table’s data.
 
-Routes and Endpoints
+- Routes and Endpoints
 
 Routes are organized in the routers/ folder. Includes GET (queries, joins between tables) and POST (create records).
 Endpoints are documented with tags in main.py for easy use in Swagger.
