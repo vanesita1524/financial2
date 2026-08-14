@@ -122,10 +122,14 @@ models.py defines Pydantic BaseModel classes to validate each table’s data.
 Routes are organized in the routers/ folder. Includes GET (queries, joins between tables) and POST (create records).
 Endpoints are documented with tags in main.py for easy use in Swagger.
 
-Imanges
+Images
 <img width="1323" height="623" alt="image" src="https://github.com/user-attachments/assets/a09e6a26-28e8-46c7-940a-e4e7dd4592bf" />
 <img width="1357" height="608" alt="image" src="https://github.com/user-attachments/assets/c451aef0-a961-41a8-b1bd-0d1a2f288c9f" />
 <img width="1326" height="552" alt="image" src="https://github.com/user-attachments/assets/1e88b096-c36f-4713-93bd-36d97b8e4dee" />
+
+Database image
+<img width="266" height="276" alt="image" src="https://github.com/user-attachments/assets/33d5a9fc-0ac1-4c38-8bb3-7bc0f0fdb2a9" />
+
 
 
 
